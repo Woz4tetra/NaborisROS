@@ -12,13 +12,13 @@
 /* ----------------------- *
  * BNO055 global variables *
  * ----------------------- */
-// 
-// #define INCLUDE_FILTERED_DATA
+
+#define INCLUDE_FILTERED_DATA
 // #define USE_QUATERNIONS
-// // #define INCLUDE_MAG_DATA
-// #define INCLUDE_GYRO_DATA
-// // #define INCLUDE_ACCEL_DATA
-// #define INCLUDE_LINACCEL_DATA
+// #define INCLUDE_MAG_DATA
+#define INCLUDE_GYRO_DATA
+// #define INCLUDE_ACCEL_DATA
+#define INCLUDE_LINACCEL_DATA
 
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 

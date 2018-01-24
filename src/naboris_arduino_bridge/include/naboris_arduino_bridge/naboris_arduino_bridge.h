@@ -2,40 +2,70 @@
 #define _NABORIS_ARDUINO_BRIDGE_H_
 
 #include "ros/ros.h"
+#include "std_msgs/Int64.h"
+#include "std_msgs/Int16MultiArray.h"
 #include "sensor_msgs/Imu.h"
 #include "serial/serial.h"
-
+#include <math.h>
+#include <iostream>
 #include <sstream>
+
+using namespace std;
 
 class NaborisArduinoBridge {
 private:
     ros::NodeHandle nh;
+
     ros::Publisher imu_pub;
+    ros::Publisher left_encoder_pub;
+    ros::Publisher right_encoder_pub;
 
-    std::string serial_port;
+    ros::Subscriber motor_command_sub;
+
+    string serial_port;
     int serial_baud;
-    std::string serial_buffer;
+    string serial_buffer;
     serial::Serial serial_ref;
+    void waitForPacket(const string packet);
 
-    void waitForPacket(const std::string);
+    float euler_roll;
+    float euler_pitch;
+    float euler_yaw;
+
+    sensor_msgs::Imu imu_msg;
+    void eulerToQuat(sensor_msgs::Imu &imu_msg, float roll, float pitch, float yaw);
+    void parseImuMessage();
+
+    std_msgs::Int64 right_encoder_msg;
+    std_msgs::Int64 left_encoder_msg;
+    void parseEncoderMessage();
+
+    void motor_command_callback(const std_msgs::Int16MultiArray& motor_commands);
 
 public:
-    NaborisArduinoBridge();
+    NaborisArduinoBridge(ros::NodeHandle* nodehandle);
 
-    static const std::string NODE_NAME;
-    static const std::string PACKET_END;
-    static const std::string HELLO_MESSAGE;
-    static const std::string READY_MESSAGE;
-    static const std::string START_COMMAND;
-    static const std::string STOP_COMMAND;
+    static const string IMU_FRAME_ID;
+    static const string CHILD_FRAME_ID;
 
-    static const std::string IMU_MESSAGE_HEADER;
-    static const std::string IMU_MESSAGE_DELIMITER;
+    static const string NODE_NAME;
+    static const string PACKET_END;
+    static const string HELLO_MESSAGE;
+    static const string READY_MESSAGE;
+    static const string START_COMMAND;
+    static const string STOP_COMMAND;
+
+    static const string IMU_MESSAGE_HEADER;
+    static const string MESSAGE_DELIMITER;
+
+    static const string ENCODER_MESSAGE_HEADER;
+
+    static const size_t MOTOR_COMMAND_MESSAGE_LEN;
 
     int run();
 };
 
-struct Error : std::exception
+struct Error : exception
 {
     char text[1000];
 

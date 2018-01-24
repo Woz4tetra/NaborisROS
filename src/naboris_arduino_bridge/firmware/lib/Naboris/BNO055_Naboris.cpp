@@ -152,7 +152,7 @@ void initIMU() {
 
     int eeAddress = 0;
     long bnoID;
-    bool foundCalib = false;
+    // bool foundCalib = false;
 
     EEPROM.get(eeAddress, bnoID);
 
@@ -184,7 +184,7 @@ void initIMU() {
         bno.setSensorOffsets(calibrationData);
 
         Serial.println("\n\nCalibration data loaded into BNO055");
-        foundCalib = true;
+        // foundCalib = true;
     }
 
     delay(1000);
@@ -264,9 +264,6 @@ float ax, ay, az;
 float lx, ly, lz;
 uint8_t sys_stat, gyro_stat, accel_stat, mag_stat = 0;
 
-#ifdef INCLUDE_FILTERED_DATA
-uint16_t imu_skip_counter = 0;
-#endif
 
 void updateIMU() {
     // Possible vector values can be:
@@ -277,61 +274,178 @@ void updateIMU() {
     // - VECTOR_LINEARACCEL   - m/s^2
     // - VECTOR_GRAVITY       - m/s^2
 
-    sensors_event_t event;
-    bno.getEvent(&event);
-
     Serial.print("imu\tt");
     Serial.print(millis());
 
-    linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-    gyro = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
-    quat = bno.getQuat();
-    bno.getCalibration(&sys_stat, &gyro_stat, &accel_stat, &mag_stat);
-    //
-    qw = quat.w();
-    qx = quat.x();
-    qy = quat.y();
-    qz = quat.z();
+    #ifdef INCLUDE_FILTERED_DATA
 
-    Serial.print("\tqw");
-    Serial.print(qw, 4);
+    #ifdef USE_QUATERNIONS
+    // Quaternion data
+    imu::Quaternion quat = bno.getQuat();
 
-    Serial.print("\tqx");
-    Serial.print(qx, 4);
+    float new_qw = quat.w();
+    float new_qx = quat.x();
+    float new_qy = quat.y();
+    float new_qz = quat.z();
 
-    Serial.print("\tqy");
-    Serial.print(qy, 4);
+    if (new_qw != qw) {
+        Serial.print("\tqw");
+        Serial.print(qw, 4);
+        qw = new_qw;
+    }
 
-    Serial.print("\tqz");
-    Serial.print(qz, 4);
+    if (new_qx != qx) {
+        Serial.print("\tqx");
+        Serial.print(qx, 4);
+        qx = new_qx;
+    }
 
-    gx = gyro.x();
-    gy = gyro.y();
-    gz = gyro.z();
+    if (new_qy != qy) {
+        Serial.print("\tqy");
+        Serial.print(qy, 4);
+        qy = new_qy;
+    }
 
-    Serial.print("\tgx");
-    Serial.print(gx, 4);
+    if (new_qz != qz) {
+        Serial.print("\tqz");
+        Serial.print(qz, 4);
+        qz = new_qz;
+    }
 
-    Serial.print("\tgy");
-    Serial.print(gy, 4);
+    #else  //  USE_QUATERNIONS
+    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
-    Serial.print("\tgz");
-    Serial.print(gz, 4);
+    float new_ex = euler.x();
+    float new_ey = euler.y();
+    float new_ez = euler.z();
 
-    float lx = linaccel.x();
-    float ly = linaccel.y();
-    float lz = linaccel.z();
+    // xyz is yaw pitch roll. switching roll pitch yaw
+    if (new_ex != ex) {
+        Serial.print("\tez");
+        Serial.print(ex, 4);
+        ex = new_ex;
+    }
 
-    Serial.print("\tlx");
-    Serial.print(lx, 4);
+    if (new_ey != ey) {
+        Serial.print("\tey");
+        Serial.print(ey, 4);
+        ey = new_ey;
+    }
 
-    Serial.print("\tly");
-    Serial.print(ly, 4);
+    if (new_ez != ez) {
+        Serial.print("\tex");
+        Serial.print(ez, 4);
+        ez = new_ez;
+    }
+    #endif  // USE_QUATERNIONS
+    #endif  // INCLUDE_FILTERED_DATA
 
-    Serial.print("\tlz");
-    Serial.print(lz, 4);
+    #ifdef INCLUDE_MAG_DATA
+    imu::Vector<3> mag = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+
+    float new_mx = mag.x();
+    float new_my = mag.y();
+    float new_mz = mag.z();
+
+    if (new_mx != mx) {
+        Serial.print("\tmx");
+        Serial.print(mx, 4);
+        mx = new_mx;
+    }
+
+    if (new_my != my) {
+        Serial.print("\tmy");
+        Serial.print(my, 4);
+        my = new_my;
+    }
+
+    if (new_mz != mz) {
+        Serial.print("\tmz");
+        Serial.print(mz, 4);
+        mz = new_mz;
+    }
+    #endif
+
+    #ifdef INCLUDE_GYRO_DATA
+    imu::Vector<3> gyro = bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
+
+    float new_gx = gyro.x();
+    float new_gy = gyro.y();
+    float new_gz = gyro.z();
+
+    if (new_gx != gx) {
+        Serial.print("\tgx");
+        Serial.print(gx, 4);
+        gx = new_gx;
+    }
+
+    if (new_gy != gy) {
+        Serial.print("\tgy");
+        Serial.print(gy, 4);
+        gy = new_gy;
+    }
+
+    if (new_gz != gz) {
+        Serial.print("\tgz");
+        Serial.print(gz, 4);
+        gz = new_gz;
+    }
+    #endif
+
+    #ifdef INCLUDE_ACCEL_DATA
+    imu::Vector<3> accel = bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
+
+    float new_ax = accel.x();
+    float new_ay = accel.y();
+    float new_az = accel.z();
+
+    if (new_ax != ax) {
+        Serial.print("\tax");
+        Serial.print(ax, 4);
+        ax = new_ax;
+    }
+
+    if (new_ay != ay) {
+        Serial.print("\tay");
+        Serial.print(ay, 4);
+        ay = new_ay;
+    }
+
+    if (new_az != az) {
+        Serial.print("\taz");
+        Serial.print(az, 4);
+        az = new_az;
+    }
+    #endif
+
+    #ifdef INCLUDE_LINACCEL_DATA
+    imu::Vector<3> linaccel = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+
+    float new_lx = linaccel.x();
+    float new_ly = linaccel.y();
+    float new_lz = linaccel.z();
+
+    if (new_lx != lx) {
+        Serial.print("\tlx");
+        Serial.print(lx, 4);
+        lx = new_lx;
+    }
+
+    if (new_ly != ly) {
+        Serial.print("\tly");
+        Serial.print(ly, 4);
+        ly = new_ly;
+    }
+
+    if (new_lz != lz) {
+        Serial.print("\tlz");
+        Serial.print(lz, 4);
+        lz = new_lz;
+    }
+    #endif
 
     /* Display calibration status for each sensor. */
+    bno.getCalibration(&sys_stat, &gyro_stat, &accel_stat, &mag_stat);
     Serial.print("\tss");
     Serial.print(sys_stat, DEC);
     Serial.print("\tsg");

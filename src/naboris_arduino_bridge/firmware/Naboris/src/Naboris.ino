@@ -4,18 +4,17 @@
 #include "Lights_Naboris.cpp"
 #include "Motors_Naboris.cpp"
 
-bool isPaused = true;
+#define DEBUG
+#include "SerialManager.h"
+
+SerialManager manager;
 
 /* ------------------------ *
  * General global variables *
  * ------------------------ */
 
-#define INIT_DATA_BUF_SIZE 255
-char init_data_buf[INIT_DATA_BUF_SIZE];
-
 void setup() {
-    Serial.begin(115200);
-    // Serial.setTimeout(100);  // 100 ms
+    manager.begin();
 
     AFMS.begin();
     strip.begin();
@@ -25,8 +24,6 @@ void setup() {
     for (int motor_num = 1; motor_num <= NUM_MOTORS; motor_num++) {
         motors[motor_num - 1] = init_motor(motor_num);
     }
-
-    snprintf(init_data_buf, INIT_DATA_BUF_SIZE, "%d\t%d", bno.getTemp(), NUM_LEDS);
 
     // fadeColors(0, 0, 0, SIGNAL_COLOR, SIGNAL_COLOR, SIGNAL_COLOR, 1, SIGNAL_DELAY, SIGNAL_INCREMENT);
     fadeColors(0, 0, 0, 0, SIGNAL_COLOR, 0, SIGNAL_CYCLES, SIGNAL_DELAY, SIGNAL_INCREMENT);
@@ -41,13 +38,14 @@ void setup() {
 
 void loop()
 {
-    while (Serial.available())
+    if (manager.available())
     {
-        String command = Serial.readStringUntil('\n');
+        int status = manager.readSerial();
 
-        if (command.equals("g")) {  // start event
-            Serial.print("starting\n");
-            isPaused = false;
+        String command = manager.getCommand();
+
+        if (status == 2)  // start event
+        {
             fadeColors(0, 0, 0, 0, 0, SIGNAL_COLOR, SIGNAL_CYCLES, SIGNAL_DELAY, SIGNAL_INCREMENT);
             setColor(strip.Color(1, 1, 1));
 
@@ -58,9 +56,8 @@ void loop()
             oldLeftPosition = -1;
             oldRightPosition = -1;
         }
-        else if (command.equals("s")) {  // stop event
-            Serial.print("stopping\n");
-            isPaused = true;
+        else if (status == 1)  // stop event
+        {
             stop_motors();
             release_motors();
             head_servo.detach();
@@ -72,79 +69,82 @@ void loop()
 
             fadeColors(0, 0, 0, SIGNAL_COLOR, 0, 0, SIGNAL_CYCLES, SIGNAL_DELAY, SIGNAL_INCREMENT);
         }
-        else if (command.charAt(0) == 'd') {  // drive command
-            int m1 = command.substring(1, 5).toInt();
-            int m2 = command.substring(5, 9).toInt();
-            int m3 = command.substring(9, 13).toInt();
-            int m4 = command.substring(13, 17).toInt();
+        else if (status == 0)  // user command
+        {
+            if (command.charAt(0) == 'd') {  // drive command
+                int m1 = command.substring(1, 5).toInt();
+                int m2 = command.substring(5, 9).toInt();
+                int m3 = command.substring(9, 13).toInt();
+                int m4 = command.substring(13, 17).toInt();
 
-            set_motors(m1, m2, m3, m4);
-            #ifdef ENABLE_MOTOR_TIMEOUT_PINGS
-            ping();
-            #endif
-        }
-
-        else if (command.charAt(0) == 'h') {  // stop command
-            stop_motors();
-        }
-        else if (command.equals("rainbow")) {
-            stop_motors();
-            head_servo.detach();
-            delay(5);
-
-            rainbowCycle(1);
-            setColor(strip.Color(1, 1, 1));
-
-            delay(5);
-            head_servo.attach(SERVO_PIN);
-        }
-        else if (command.charAt(0) == 'r') {  // release command
-            release_motors();
-        }
-        else if (command.charAt(0) == 'c') {  // servo command
-            int servo_value = command.substring(1, 4).toInt();
-            head_servo.write(servo_value);
-        }
-        else if (command.charAt(0) == 'o') {  // pixel command
-            int led_num = command.substring(1, 4).toInt();
-            if (led_num < 0) {
-                led_num = 0;
+                set_motors(m1, m2, m3, m4);
+                #ifdef ENABLE_MOTOR_TIMEOUT_PINGS
+                ping();
+                #endif
             }
-            int r = command.substring(4, 7).toInt();
-            int g = command.substring(7, 10).toInt();
-            int b = command.substring(10, 13).toInt();
-            if (command.length() > 13)
-            {
-                int stop_num = command.substring(13, 16).toInt();
-                if (stop_num > NUM_LEDS) {
-                    stop_num = NUM_LEDS;
+
+            else if (command.charAt(0) == 'h') {  // stop motors command
+                stop_motors();
+            }
+            else if (command.equals("rainbow")) {
+                stop_motors();
+                head_servo.detach();
+                delay(5);
+
+                rainbowCycle(1);
+                setColor(strip.Color(1, 1, 1));
+
+                delay(5);
+                head_servo.attach(SERVO_PIN);
+            }
+            else if (command.charAt(0) == 'r') {  // release command
+                release_motors();
+            }
+            else if (command.charAt(0) == 'c') {  // servo command
+                int servo_value = command.substring(1, 4).toInt();
+                head_servo.write(servo_value);
+            }
+            else if (command.charAt(0) == 'o') {  // pixel command
+                int led_num = command.substring(1, 4).toInt();
+                if (led_num < 0) {
+                    led_num = 0;
                 }
-                for (int index = led_num; index < stop_num; index++) {
-                    strip.setPixelColor(index, strip.Color(r, g, b));
+                int r = command.substring(4, 7).toInt();
+                int g = command.substring(7, 10).toInt();
+                int b = command.substring(10, 13).toInt();
+                if (command.length() > 13)
+                {
+                    int stop_num = command.substring(13, 16).toInt();
+                    if (stop_num > NUM_LEDS) {
+                        stop_num = NUM_LEDS;
+                    }
+                    for (int index = led_num; index < stop_num; index++) {
+                        strip.setPixelColor(index, strip.Color(r, g, b));
+                    }
+                }
+                else {
+                    strip.setPixelColor(led_num, strip.Color(r, g, b));
                 }
             }
-            else {
-                strip.setPixelColor(led_num, strip.Color(r, g, b));
+            else if (command.charAt(0) == 'f' && command.length() == 13) {  // command leds to fade to a color
+                int cycle_num = command.substring(1, 4).toInt();
+                int r = command.substring(4, 7).toInt();
+                int g = command.substring(7, 10).toInt();
+                int b = command.substring(10, 13).toInt();
+                // fadeColors(SIGNAL_COLOR, SIGNAL_COLOR, SIGNAL_COLOR, 1, SIGNAL_DELAY, SIGNAL_INCREMENT);
+                fadeColors(0, 0, 0, r, g, b, cycle_num, SIGNAL_DELAY, SIGNAL_INCREMENT);
             }
-        }
-        else if (command.charAt(0) == 'f' && command.length() == 13) {  // command leds to fade to a color
-            int cycle_num = command.substring(1, 4).toInt();
-            int r = command.substring(4, 7).toInt();
-            int g = command.substring(7, 10).toInt();
-            int b = command.substring(10, 13).toInt();
-            // fadeColors(SIGNAL_COLOR, SIGNAL_COLOR, SIGNAL_COLOR, 1, SIGNAL_DELAY, SIGNAL_INCREMENT);
-            fadeColors(0, 0, 0, r, g, b, cycle_num, SIGNAL_DELAY, SIGNAL_INCREMENT);
-        }
-        else if (command.charAt(0) == 'x') {  // show command
-            head_servo.detach();
-            delay(5);
-            strip.show();
-            delay(5);
-            head_servo.attach(SERVO_PIN);
+            else if (command.charAt(0) == 'x') {  // show command
+                head_servo.detach();
+                delay(5);
+                strip.show();
+                delay(5);
+                head_servo.attach(SERVO_PIN);
+            }
         }
     }
 
-    if (!isPaused) {
+    if (!manager.isPaused()) {
         #ifdef ENABLE_MOTOR_TIMEOUT_PINGS
         if (ping_timer > millis())  ping_timer = millis();
         if ((millis() - ping_timer) > 500) {
@@ -157,7 +157,7 @@ void loop()
         updateEncoders();
         updateIMU();
 
-        // 10Hz update rate for imu
-        delay(BNO055_SAMPLERATE_DELAY_MS);
+        // 100Hz update rate for imu
+        delay(10);
     }
 }
