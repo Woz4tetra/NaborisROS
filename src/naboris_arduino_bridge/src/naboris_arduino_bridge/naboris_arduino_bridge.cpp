@@ -120,7 +120,7 @@ int NaborisArduinoBridge::run()
         if (serial_ref.available())
         {
             serial_buffer = serial_ref.readline();
-            // serial_buffer += serial_ref.read(serial_ref.available());
+
             if (serial_buffer.at(0) == '-') {
                 ROS_WARN("message: %s", serial_buffer.substr(1).c_str());
                 continue;
@@ -250,11 +250,17 @@ void NaborisArduinoBridge::parseEncoderMessage()
 
 void NaborisArduinoBridge::motor_command_callback(const std_msgs::Int16MultiArray& motor_commands)
 {
-    char buffer[MOTOR_COMMAND_MESSAGE_LEN];
-    sprintf(buffer, "d%04d%04d%04d%04d\n",
-        motor_commands.data[0], motor_commands.data[1], motor_commands.data[2], motor_commands.data[3]
-    );
+    if (motor_commands.layout.dim[0].size == 4)
+    {
+        char buffer[MOTOR_COMMAND_MESSAGE_LEN];
+        sprintf(buffer, "d%04d%04d%04d%04d\n",
+            motor_commands.data[0], motor_commands.data[1], motor_commands.data[2], motor_commands.data[3]
+        );
 
-    ROS_INFO("writing %s", buffer);
-    serial_ref.write(buffer);
+        ROS_INFO("writing %s", buffer);
+        serial_ref.write(buffer);
+    }
+    else {
+        ROS_WARN("Invalid array size");
+    }
 }

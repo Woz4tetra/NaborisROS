@@ -4,7 +4,6 @@
 #include "Lights_Naboris.cpp"
 #include "Motors_Naboris.cpp"
 
-#define DEBUG
 #include "SerialManager.h"
 
 SerialManager manager;
