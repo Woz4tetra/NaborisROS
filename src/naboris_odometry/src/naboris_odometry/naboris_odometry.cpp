@@ -56,18 +56,6 @@ NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
         wheel_radius_mm = 27.0;
     }
 
-    if (!nh.getParam(NODE_NAME + "/dist_between_wheels_mm", dist_between_wheels_mm))
-    {
-        ROS_INFO_STREAM("Dist between wheels parameter not found, using default (109.0 mm)");
-        dist_between_wheels_mm = 109.0;
-    }
-
-    if (!nh.getParam(NODE_NAME + "/dist_between_axles_mm", dist_between_axles_mm))
-    {
-        ROS_INFO_STREAM("Dist between axles parameter not found, using default (143.0 mm)");
-        dist_between_axles_mm = 143.0;
-    }
-
     ticks_to_mm = wheel_radius_mm * 2.0 * M_PI / (gear_ratio * counts_per_revolution);
     ROS_INFO("ticks to mm: %f", ticks_to_mm);
 

@@ -62,8 +62,6 @@ private:
     double gear_ratio;
     double wheel_radius_mm;
     double ticks_to_mm;
-    double dist_between_wheels_mm;
-    double dist_between_axles_mm;
 
     void update_odom_message_enc();
 

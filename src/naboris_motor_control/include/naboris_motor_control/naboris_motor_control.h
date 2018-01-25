@@ -26,6 +26,10 @@ private:
     string odometry_topic;
     string cmd_vel_topic;
 
+    double wheel_radius_mm;
+    double dist_between_wheels_mm;
+    double dist_between_axles_mm;
+
     geometry_msgs::Twist twist_set_point;
 
     void set_motor_command(int m1, int m2, int m3, int m4);
