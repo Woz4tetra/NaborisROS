@@ -3,6 +3,7 @@
 const string NaborisOdometry::FRAME_ID = "odom_link";
 const string NaborisOdometry::CHILD_FRAME_ID = "base_link";
 const string NaborisOdometry::NODE_NAME = "naboris_odometry";
+const string NaborisOdometry::ROBOT_INFO = "naboris_info";
 const double NaborisOdometry::ENCODER_UPDATE_THRESHOLD = 50.0;
 
 NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
@@ -38,19 +39,19 @@ NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
         left_encoder_topic = "left_encoder";
     }
 
-    if (!nh.getParam(NODE_NAME + "/counts_per_revolution", counts_per_revolution))
+    if (!nh.getParam(ROBOT_INFO + "/counts_per_revolution", counts_per_revolution))
     {
         ROS_INFO_STREAM("Counts per revolution parameter not found, using default (12)");
         counts_per_revolution = 12.0;
     }
 
-    if (!nh.getParam(NODE_NAME + "/gear_ratio", gear_ratio))
+    if (!nh.getParam(ROBOT_INFO + "/gear_ratio", gear_ratio))
     {
         ROS_INFO_STREAM("Gear ratio parameter not found, using default (150.58)");
         gear_ratio = 150.58;
     }
 
-    if (!nh.getParam(NODE_NAME + "/wheel_radius_mm", wheel_radius_mm))
+    if (!nh.getParam(ROBOT_INFO + "/wheel_radius_mm", wheel_radius_mm))
     {
         ROS_INFO_STREAM("Wheel ratio parameter not found, using default (27.0 mm)");
         wheel_radius_mm = 27.0;

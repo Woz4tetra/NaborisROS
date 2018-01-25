@@ -71,6 +71,7 @@ public:
     static const string FRAME_ID;
     static const string CHILD_FRAME_ID;
     static const string NODE_NAME;
+    static const string ROBOT_INFO;
 
     static const double ENCODER_UPDATE_THRESHOLD;
 };

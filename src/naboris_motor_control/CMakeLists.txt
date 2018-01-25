@@ -12,7 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     roslaunch
     sensor_msgs
-    naboris_odometry
 )
 roslaunch_add_file_check(launch)
 
@@ -108,7 +107,7 @@ roslaunch_add_file_check(launch)
 catkin_package(
      INCLUDE_DIRS include
      LIBRARIES naboris_motor_control
-     CATKIN_DEPENDS geometry_msgs roscpp roslaunch sensor_msgs naboris_odometry
+     CATKIN_DEPENDS geometry_msgs roscpp roslaunch sensor_msgs
      DEPENDS system_lib
 )
 

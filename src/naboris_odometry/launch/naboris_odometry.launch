@@ -1,5 +1,4 @@
 <launch>
     <node type="naboris_odometry_node" name="naboris_odometry_node" pkg="naboris_odometry" required="true" output="screen">
-
     </node>
 </launch>
