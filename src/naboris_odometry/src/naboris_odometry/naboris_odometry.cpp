@@ -1,16 +1,29 @@
 #include <naboris_odometry/naboris_odometry.h>
 
+const string NaborisOdometry::FRAME_ID = "odom_link";
 const string NaborisOdometry::CHILD_FRAME_ID = "base_link";
 const string NaborisOdometry::NODE_NAME = "naboris_odometry";
+const double NaborisOdometry::ENCODER_UPDATE_THRESHOLD = 50.0;
 
 NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
 {
-    odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 5);
 
     if (!nh.getParam(NODE_NAME + "/imu_topic", imu_topic))
     {
         ROS_INFO_STREAM("IMU topic parameter not found, using default");
         imu_topic = "BNO055";
+    }
+
+    if (!nh.getParam(NODE_NAME + "/odom_topic", odom_topic))
+    {
+        ROS_INFO_STREAM("Odom topic parameter not found, using default");
+        odom_topic = "odom";
+    }
+
+    if (!nh.getParam(NODE_NAME + "/encoder_delta_topic", encoder_delta_topic))
+    {
+        ROS_INFO_STREAM("Encoder delta topic parameter not found, using default");
+        encoder_delta_topic = "encoder_delta";
     }
 
     if (!nh.getParam(NODE_NAME + "/right_encoder_topic", right_encoder_topic))
@@ -61,7 +74,10 @@ NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
     imu_sub = nh.subscribe(imu_topic, 1, &NaborisOdometry::imu_callback, this);
     right_encoder_sub = nh.subscribe(right_encoder_topic, 1, &NaborisOdometry::right_enc_callback, this);
     left_encoder_sub = nh.subscribe(left_encoder_topic, 1, &NaborisOdometry::left_enc_callback, this);
+    odom_pub = nh.advertise<nav_msgs::Odometry>(odom_topic, 5);
+    encoder_delta_pub = nh.advertise<naboris_odometry::EncoderDelta>(encoder_delta_topic, 5);
 
+    odom_msg.header.frame_id = FRAME_ID;
     odom_msg.child_frame_id = CHILD_FRAME_ID;
 
     right_updated = false;
@@ -86,6 +102,11 @@ void NaborisOdometry::imu_callback(const sensor_msgs::Imu& imu_msg)
         odom_msg.twist.twist.linear.x = 0.0;
         odom_msg.twist.twist.linear.y = 0.0;
         odom_msg.twist.twist.linear.z = 0.0;
+
+        encoder_delta_msg.right_speed = 0.0;
+        encoder_delta_msg.center_speed = 0.0;
+        encoder_delta_msg.left_speed = 0.0;
+        encoder_delta_pub.publish(encoder_delta_msg);
     }
     odom_msg.header.stamp = ros::Time::now();
     odom_msg.pose.pose.orientation = imu_msg.orientation;
@@ -110,23 +131,28 @@ void NaborisOdometry::left_enc_callback(const std_msgs::Int64& encoder_msg)
 
 void NaborisOdometry::update_odom_message_enc()
 {
-    if (right_updated && left_updated)
+    double delta_right = ticks_to_mm * (double)(right_tick - prev_right_tick);
+    double delta_left = ticks_to_mm * (double)(left_tick - prev_left_tick);
+
+    if ((right_updated && left_updated) ||
+        delta_right > ENCODER_UPDATE_THRESHOLD ||
+        delta_left > ENCODER_UPDATE_THRESHOLD)
     {
         right_updated = false;
         left_updated = false;
 
-        long long delta_right = right_tick - prev_right_tick;
-        long long delta_left = left_tick - prev_left_tick;
-
         ROS_DEBUG("-----------");
-        ROS_DEBUG("d right: %lli, d left: %lli", delta_right, delta_left);
+        ROS_DEBUG("d right: %f, d left: %f", delta_right, delta_left);
 
         prev_right_tick = right_tick;
         prev_left_tick = left_tick;
 
-        double delta_dist = ticks_to_mm * (double)(delta_right + delta_left) / 2;
+        double delta_dist = (delta_right + delta_left) / 2;
 
         ROS_DEBUG("delta_dist: %f", delta_dist);
+        encoder_delta_msg.right = delta_right;
+        encoder_delta_msg.center = delta_dist;
+        encoder_delta_msg.left = delta_left;
 
         if (delta_dist == 0.0)
         {
@@ -176,9 +202,13 @@ void NaborisOdometry::update_odom_message_enc()
             odom_msg.twist.twist.linear.x = delta_x / dt.toSec();
             odom_msg.twist.twist.linear.y = delta_y / dt.toSec();
             odom_msg.twist.twist.linear.z = delta_z / dt.toSec();
+
+            encoder_delta_msg.right_speed = delta_right / dt.toSec();
+            encoder_delta_msg.center_speed = delta_dist / dt.toSec();
+            encoder_delta_msg.left_speed = delta_left / dt.toSec();
         }
 
-
         odom_pub.publish(odom_msg);
+        encoder_delta_pub.publish(encoder_delta_msg);
     }
 }

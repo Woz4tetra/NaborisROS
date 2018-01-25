@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find naboris_arduino_bridge)/launch/naboris_arduino_bridge.launch"></include>
+    <include file="$(find naboris_odometry)/launch/naboris_odometry.launch"></include>
+</launch>

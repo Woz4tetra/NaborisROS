@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(naboris_odometry)
+project(naboris_motor_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     roslaunch
     sensor_msgs
-    message_generation
+    naboris_odometry
 )
 roslaunch_add_file_check(launch)
 
@@ -50,10 +50,11 @@ roslaunch_add_file_check(launch)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-    FILES
-    EncoderDelta.msg
-)
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,10 +71,10 @@ add_message_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-    DEPENDENCIES
-    std_msgs
-)
+# generate_messages(
+#   DEPENDENCIES
+#   geometry_msgs#   sensor_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -106,8 +107,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
      INCLUDE_DIRS include
-     LIBRARIES naboris_odometry
-     CATKIN_DEPENDS geometry_msgs roscpp roslaunch sensor_msgs message_runtime
+     LIBRARIES naboris_motor_control
+     CATKIN_DEPENDS geometry_msgs roscpp roslaunch sensor_msgs naboris_odometry
      DEPENDS system_lib
 )
 
@@ -199,7 +200,7 @@ install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_naboris_odometry.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_naboris_motor_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

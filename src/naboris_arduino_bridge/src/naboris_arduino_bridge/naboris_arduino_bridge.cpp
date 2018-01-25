@@ -250,7 +250,7 @@ void NaborisArduinoBridge::parseEncoderMessage()
 
 void NaborisArduinoBridge::motor_command_callback(const std_msgs::Int16MultiArray& motor_commands)
 {
-    if (motor_commands.layout.dim[0].size == 4)
+    if (motor_commands.layout.dim[0].stride == 4)
     {
         char buffer[MOTOR_COMMAND_MESSAGE_LEN];
         sprintf(buffer, "d%04d%04d%04d%04d\n",

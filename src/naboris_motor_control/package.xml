@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>naboris_odometry</name>
+  <name>naboris_motor_control</name>
   <version>0.0.0</version>
-  <description>The naboris_odometry package</description>
+  <description>The naboris_motor_control package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/naboris_odometry</url> -->
+  <!-- <url type="website">http://wiki.ros.org/naboris_motor_control</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -53,12 +53,12 @@
   <build_depend>roscpp</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>naboris_odometry</build_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>roslaunch</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <build_export_depend>naboris_odometry</build_export_depend>
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>roslaunch</exec_depend>
