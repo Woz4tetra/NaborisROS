@@ -1,8 +1,0 @@
-<launch>
-    <node type="naboris_arduino_bridge_node" name="naboris_arduino_bridge_node" pkg="naboris_arduino_bridge" required="true">
-        <!-- Serial port on device for the UBLOX gps -->
-        <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
-        <!-- Baud rate for communicating with low level -->
-        <param name="serial_baud" type="int" value="115200"/>
-    </node>
-</launch>

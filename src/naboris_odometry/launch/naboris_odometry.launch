@@ -1,0 +1,7 @@
+<launch>
+    <node type="naboris_odometry_node" name="naboris_odometry_node" pkg="naboris_odometry" required="true">
+        
+    </node>
+
+    <include file="$(find naboris_arduino_bridge)/launch/naboris_arduino_bridge.launch"></include>
+</launch>

@@ -166,9 +166,9 @@ void NaborisArduinoBridge::parseImuMessage()
             case 't': ROS_DEBUG("imu arduino time: %s", token.substr(1).c_str()); break;
             case 'e':
                 switch (token.at(1)) {
-                    case 'x': euler_roll = M_PI / 180.0 * STR_TO_FLOAT(token.substr(2)); break;
+                    case 'z': euler_roll = M_PI / 180.0 * STR_TO_FLOAT(token.substr(2)); break;
                     case 'y': euler_pitch = M_PI / 180.0 * STR_TO_FLOAT(token.substr(2)); break;
-                    case 'z': euler_yaw = M_PI / 180.0 * STR_TO_FLOAT(token.substr(2)); break;
+                    case 'x': euler_yaw = M_PI / 180.0 * STR_TO_FLOAT(token.substr(2)); break;
                 }
                 break;
             // case 'a':
@@ -230,7 +230,7 @@ void NaborisArduinoBridge::parseEncoderMessage()
 
     switch (serial_buffer.at(0)) {
         case 'r':
-            right_encoder_msg.data = STR_TO_INT(serial_buffer.substr(time_index + 1));
+            right_encoder_msg.data = -STR_TO_INT(serial_buffer.substr(time_index + 1));
             ROS_DEBUG("right_encoder_msg: %lli", right_encoder_msg.data);
 
             right_encoder_pub.publish(right_encoder_msg);

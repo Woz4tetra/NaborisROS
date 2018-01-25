@@ -5,6 +5,10 @@
 #include "std_msgs/Int64.h"
 #include "sensor_msgs/Imu.h"
 #include "nav_msgs/Odometry.h"
+#include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Quaternion.h"
+#include "geometry_msgs/PoseWithCovariance.h"
+#include "geometry_msgs/TwistWithCovariance.h"
 #include <tf/transform_datatypes.h>
 #include <math.h>
 #include <iostream>
@@ -29,8 +33,8 @@ private:
     string left_encoder_topic;
 
     void imu_callback(const sensor_msgs::Imu& imu_msg);
-    void right_enc_callback(const std_msgs::Int64& imu_msg);
-    void left_enc_callback(const std_msgs::Int64& imu_msg);
+    void right_enc_callback(const std_msgs::Int64& encoder_msg);
+    void left_enc_callback(const std_msgs::Int64& encoder_msg);
 
     bool right_updated;
     bool left_updated;
@@ -41,9 +45,14 @@ private:
     long long prev_left_tick;
     long long prev_right_tick;
 
+    double position_x;
+    double position_y;
+    double position_z;
+
+    ros::Duration velocity_timeout;
     ros::Time prev_enc_time;
 
-    int counts_per_revolution;
+    double counts_per_revolution;
     double gear_ratio;
     double wheel_radius_mm;
     double ticks_to_mm;
