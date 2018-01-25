@@ -49,17 +49,18 @@ void loop()
             setColor(strip.Color(1, 1, 1));
 
             stop_motors();
-            head_servo.attach(SERVO_PIN);
             rightEncoder.write(0);
             leftEncoder.write(0);
             oldLeftPosition = -1;
             oldRightPosition = -1;
+            attach_servo();
+            head_servo.write(90);
         }
         else if (status == 1)  // stop event
         {
             stop_motors();
             release_motors();
-            head_servo.detach();
+            detach_servo();
 
             for (int index = 0; index < NUM_LEDS; index++) {
                 strip.setPixelColor(index, 0);
@@ -87,20 +88,22 @@ void loop()
             }
             else if (command.equals("rainbow")) {
                 stop_motors();
-                head_servo.detach();
+                detach_servo();
                 delay(5);
 
                 rainbowCycle(1);
                 setColor(strip.Color(1, 1, 1));
 
                 delay(5);
-                head_servo.attach(SERVO_PIN);
+                attach_servo();
             }
             else if (command.charAt(0) == 'r') {  // release command
                 release_motors();
             }
             else if (command.charAt(0) == 'c') {  // servo command
                 int servo_value = command.substring(1, 4).toInt();
+
+                attach_servo();
                 head_servo.write(servo_value);
             }
             else if (command.charAt(0) == 'o') {  // pixel command
@@ -134,11 +137,11 @@ void loop()
                 fadeColors(0, 0, 0, r, g, b, cycle_num, SIGNAL_DELAY, SIGNAL_INCREMENT);
             }
             else if (command.charAt(0) == 'x') {  // show command
-                head_servo.detach();
+                detach_servo();
                 delay(5);
                 strip.show();
                 delay(5);
-                head_servo.attach(SERVO_PIN);
+                attach_servo();
             }
         }
     }
@@ -151,6 +154,11 @@ void loop()
             ping_timer = millis();
         }
         #endif
+
+        if (servo_timer > millis())  servo_timer = millis();
+        if (servos_attached && (millis() - servo_timer) > 500)  {
+            detach_servo();
+        }
 
         updateMotors();
         updateEncoders();

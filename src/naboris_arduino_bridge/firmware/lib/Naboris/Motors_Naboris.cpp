@@ -39,6 +39,28 @@ uint32_t ping_timer = millis();
  * ---------------------- */
 
 Servo head_servo;
+uint32_t servo_timer = millis();
+bool servos_attached = false;
+
+void attach_servo()
+{
+    if (!servos_attached) {
+        servos_attached = true;
+        head_servo.attach(SERVO_PIN);
+        servo_timer = millis();
+    }
+}
+
+void detach_servo()
+{
+    if (servos_attached) {
+        servos_attached = false;
+        head_servo.detach();
+        servo_timer = millis();
+    }
+}
+
+
 
 void set_motor_speed(int motor_num)
 {
