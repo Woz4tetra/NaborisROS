@@ -45,11 +45,12 @@ NaborisMotorControl::NaborisMotorControl(ros::NodeHandle* nodehandle):nh(*nodeha
     cmd_vel_sub = nh.subscribe(cmd_vel_topic, 1, &NaborisMotorControl::cmd_vel_callback, this);
     motor_command_pub = nh.advertise<std_msgs::Int16MultiArray>(motor_command_topic, 5);
 
+    motor_command_msg.layout.dim.push_back(std_msgs::MultiArrayDimension());
     motor_command_msg.layout.dim[0].size = 1;
     motor_command_msg.layout.dim[0].stride = 4;
 
     for (int i = 0; i < motor_command_msg.layout.dim[0].stride; i++) {
-		motor_command_msg.data.push_back(0);
+        motor_command_msg.data.push_back(0);
 	}
 }
 

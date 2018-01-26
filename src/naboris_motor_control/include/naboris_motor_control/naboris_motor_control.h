@@ -2,6 +2,7 @@
 #define _NABORIS_MOTOR_CONTROL_H_
 
 #include "ros/ros.h"
+#include "std_msgs/MultiArrayDimension.h"
 #include "std_msgs/Int16MultiArray.h"
 #include "geometry_msgs/Twist.h"
 #include <math.h>
