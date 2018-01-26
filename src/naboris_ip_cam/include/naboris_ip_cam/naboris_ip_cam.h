@@ -25,6 +25,7 @@ private:
     ros::NodeHandle nh;
 
     bool has_connection;
+    double fps;
     cv::VideoCapture capture;
 
     boost::shared_ptr<image_transport::ImageTransport> image_transport;
@@ -47,8 +48,6 @@ public:
     static const string IP_ADDRESS;
     static const string PORT;
     static const string URL_SUFFIX;
-
-    static const double FPS;
 };
 
 #endif  // _NABORIS_IP_CAM_H_

@@ -9,15 +9,34 @@ const string NaborisIpCam::URL_SUFFIX = "/api/robot/rightcam";
 
 const string NaborisIpCam::NODE_NAME = "naboris_ip_cam";
 
-const double NaborisIpCam::FPS = 25.0;
-
 NaborisIpCam::NaborisIpCam(ros::NodeHandle* nodehandle):
     nh(*nodehandle),
     image_transport(new image_transport::ImageTransport(nh)),
-    image_pub(image_transport->advertiseCamera("image_raw", 1)),
-    camera_info_manager(new camera_info_manager::CameraInfoManager(nh))
+    image_pub(image_transport->advertiseCamera("image_raw", 1))
 {
-    timer = nh.createTimer(ros::Duration(1.0 / FPS), &NaborisIpCam::timerCallback, this);
+    std::string camera_info_url;
+    std::string camera_name;
+
+    if (!nh.getParam(NODE_NAME + "/camera_info_url", camera_info_url))
+    {
+        ROS_INFO_STREAM("Camera info url parameter not found, using default");
+        camera_info_url = "package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308_30fps.yaml";
+    }
+
+    if (!nh.getParam(NODE_NAME + "/camera_name", camera_name))
+    {
+        ROS_INFO_STREAM("Camera name parameter not found, using default");
+        camera_name = "right_cam";
+    }
+
+    if (!nh.getParam(NODE_NAME + "/fps", fps))
+    {
+        ROS_INFO_STREAM("FPS parameter not found, using default (30.0)");
+        fps = 30.0;
+    }
+
+    camera_info_manager.reset(new camera_info_manager::CameraInfoManager(nh, camera_name, camera_info_url));
+    timer = nh.createTimer(ros::Duration(1.0 / fps), &NaborisIpCam::timerCallback, this);
 
     connectToCamera();
 }
