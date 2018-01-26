@@ -1,0 +1,3 @@
+<launch>
+    <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true" output="screen"></node>
+</launch>
