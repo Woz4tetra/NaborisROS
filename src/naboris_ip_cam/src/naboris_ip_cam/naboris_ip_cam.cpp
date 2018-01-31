@@ -7,12 +7,14 @@ const string NaborisIpCam::IP_ADDRESS = "10.76.76.1";
 const string NaborisIpCam::PORT = "80";
 const string NaborisIpCam::URL_SUFFIX = "/api/robot/rightcam";
 
+const string NaborisIpCam::IMAGE_PUB_TOPIC = "raspicam_node_right/image_raw";
+
 const string NaborisIpCam::NODE_NAME = "naboris_ip_cam";
 
 NaborisIpCam::NaborisIpCam(ros::NodeHandle* nodehandle):
     nh(*nodehandle),
     image_transport(new image_transport::ImageTransport(nh)),
-    image_pub(image_transport->advertiseCamera("image_raw", 1))
+    image_pub(image_transport->advertiseCamera(IMAGE_PUB_TOPIC, 1))
 {
     std::string camera_info_url;
     std::string camera_name;

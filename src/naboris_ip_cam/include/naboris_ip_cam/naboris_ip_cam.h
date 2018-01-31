@@ -48,6 +48,7 @@ public:
     static const string IP_ADDRESS;
     static const string PORT;
     static const string URL_SUFFIX;
+    static const string IMAGE_PUB_TOPIC;
 };
 
 #endif  // _NABORIS_IP_CAM_H_
