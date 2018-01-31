@@ -52,7 +52,7 @@ NaborisArduinoBridge::NaborisArduinoBridge(ros::NodeHandle* nodehandle):nh(*node
 }
 
 
-void NaborisArduinoBridge::waitForPacket(const string packet)
+bool NaborisArduinoBridge::waitForPacket(const string packet)
 {
     ros::Time begin = ros::Time::now();
     ros::Duration timeout = ros::Duration(5.0);
@@ -65,12 +65,13 @@ void NaborisArduinoBridge::waitForPacket(const string packet)
 
             if (serial_buffer.compare(packet) == 0) {
                 ROS_INFO("Naboris sent %s!", packet.c_str());
-                return;
+                return true;
             }
         }
     }
 
-    throw Error("Timeout reached. Serial buffer didn't contain '%s', buffer: %s", packet.c_str(), serial_buffer.c_str());
+    ROS_ERROR("Timeout reached. Serial buffer didn't contain '%s', buffer: %s", packet.c_str(), serial_buffer.c_str());
+    return false;
 }
 
 void NaborisArduinoBridge::eulerToQuat(sensor_msgs::Imu &imu_msg, float roll, float pitch, float yaw)
@@ -105,8 +106,12 @@ int NaborisArduinoBridge::run()
         return -1;
     }
 
-    waitForPacket(HELLO_MESSAGE);
-    waitForPacket(READY_MESSAGE);
+    if (!waitForPacket(HELLO_MESSAGE)) {
+        return 1;
+    }
+    if (!waitForPacket(READY_MESSAGE)) {
+        return 1;
+    }
 
     serial_ref.write(START_COMMAND);
 

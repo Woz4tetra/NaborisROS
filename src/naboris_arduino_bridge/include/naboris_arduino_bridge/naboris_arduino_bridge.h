@@ -26,7 +26,7 @@ private:
     int serial_baud;
     string serial_buffer;
     serial::Serial serial_ref;
-    void waitForPacket(const string packet);
+    bool waitForPacket(const string packet);
 
     float euler_roll;
     float euler_pitch;
@@ -63,20 +63,6 @@ public:
     static const size_t MOTOR_COMMAND_MESSAGE_LEN;
 
     int run();
-};
-
-struct Error : exception
-{
-    char text[1000];
-
-    Error(char const* fmt, ...) __attribute__((format(printf,2,3))) {
-        va_list ap;
-        va_start(ap, fmt);
-        vsnprintf(text, sizeof text, fmt, ap);
-        va_end(ap);
-    }
-
-    char const* what() const throw() { return text; }
 };
 
 #endif // _NABORIS_ARDUINO_BRIDGE_H_

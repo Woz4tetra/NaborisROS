@@ -1,0 +1,4 @@
+<launch>
+    <node type="naboris_stereo_node" name="naboris_stereo_node" pkg="naboris_stereo" required="true" output="screen">
+    </node>
+</launch>

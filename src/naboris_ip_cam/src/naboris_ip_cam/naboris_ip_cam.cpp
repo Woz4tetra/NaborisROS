@@ -7,7 +7,7 @@ const string NaborisIpCam::IP_ADDRESS = "10.76.76.1";
 const string NaborisIpCam::PORT = "80";
 const string NaborisIpCam::URL_SUFFIX = "/api/robot/rightcam";
 
-const string NaborisIpCam::IMAGE_PUB_TOPIC = "raspicam_node_right/image_raw";
+const string NaborisIpCam::IMAGE_PUB_TOPIC = "naboris_ip_cam/image_raw";
 
 const string NaborisIpCam::NODE_NAME = "naboris_ip_cam";
 
