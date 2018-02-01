@@ -22,6 +22,7 @@ NaborisIpCam::NaborisIpCam(ros::NodeHandle* nodehandle):
     if (!nh.getParam(NODE_NAME + "/camera_info_url", camera_info_url))
     {
         ROS_INFO_STREAM("Camera info url parameter not found, using default");
+        // camera_info_url = "package://naboris_ip_cam/camera_info/naboris_ip_cam_720x480_30fps.yaml";
         camera_info_url = "package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308_30fps.yaml";
     }
 
@@ -33,8 +34,8 @@ NaborisIpCam::NaborisIpCam(ros::NodeHandle* nodehandle):
 
     if (!nh.getParam(NODE_NAME + "/fps", fps))
     {
-        ROS_INFO_STREAM("FPS parameter not found, using default (30.0)");
-        fps = 30.0;
+        ROS_INFO_STREAM("FPS parameter not found, using default (40.0)");
+        fps = 40.0;
     }
 
     camera_info_manager.reset(new camera_info_manager::CameraInfoManager(nh, camera_name, camera_info_url));
@@ -66,7 +67,7 @@ void NaborisIpCam::timerCallback(const ros::TimerEvent &event)
     cv::Mat image;
     if (!capture.read(image))
     {
-        ROS_WARN("No frame");
+        ROS_WARN("IP camera found no frame");
         cv::waitKey();
     }
 

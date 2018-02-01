@@ -1,7 +1,9 @@
 <launch>
     <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true" output="screen">
-        <remap from="/naboris_ip_cam/camera_info" to="/naboris_stereo/right/camera_info"/>
         <param name="camera_info_url" value="package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308_30fps.yaml"/>
         <param name="fps" value="50.0"/>
+
+        <!-- <remap from="/naboris_ip_cam/image_raw" to="/naboris_stereo/right/image_raw"/> -->
+        <!-- <remap from="/naboris_ip_cam/camera_info" to="/naboris_stereo/right/camera_info"/> -->
     </node>
 </launch>

@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="naboris_motor_command_test" type="naboris_motor_command_test.py" name="naboris_motor_command_test" required="true" output="screen"/>
+</launch>

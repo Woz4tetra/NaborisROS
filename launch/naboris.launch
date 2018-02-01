@@ -3,14 +3,22 @@
     <!-- <include file="$(find naboris_arduino_bridge)/launch/naboris_arduino_bridge.launch"></include>
     <include file="$(find naboris_odometry)/launch/naboris_odometry.launch"></include>
     <include file="$(find naboris_motor_control)/launch/naboris_motor_control.launch"></include> -->
+    <!-- <include file="$(find naboris_ip_cam)/launch/naboris_ip_cam_720x480_30fps.launch"></include> -->
     <include file="$(find naboris_ip_cam)/launch/naboris_ip_cam_410x308_30fps.launch"></include>
+    <!-- <include file="$(find raspicam_node)/launch/camerav2_720x480_30fps.launch"></include> -->
     <include file="$(find raspicam_node)/launch/camerav2_410x308_30fps.launch"></include>
     <include file="$(find naboris_stereo)/launch/naboris_stereo.launch"></include>
+    <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam" args="load /raspicam_node $(find raspicam_node)/params/raspicam_node_defaults.yaml" />
+
+    <!-- <node pkg="image_transport" type="republish" name="republish" required="true"
+        args="compressed in:=/raspicam_node/image raw out:=/naboris_stereo/left/image_raw">
+    </node> -->
+
 
     <group ns="/naboris_stereo" >
         <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" output="screen">
-            <param name="approximate_sync" value="True" />
-            <!-- <param name="disparity_range" value="128"/> -->
+            <param name="~approximate_sync" value="True" />
+            <param name="~queue_size" value="25" />
         </node>
     </group>
 </launch>
