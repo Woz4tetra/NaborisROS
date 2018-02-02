@@ -75,8 +75,8 @@ private:
         const sensor_msgs::CameraInfoConstPtr& left_info_msg
     );
 
-    cv::Mat extractMat(const sensor_msgs::ImageConstPtr& image_msg);
-    sensor_msgs::ImagePtr matToMsg(cv::Mat image, std_msgs::Header header);
+    // cv::Mat extractMat(const sensor_msgs::ImageConstPtr& image_msg);
+    // sensor_msgs::ImagePtr matToMsg(cv::Mat image, std_msgs::Header header);
     // bool right_img_ready;
     // bool left_img_ready;
 
@@ -85,11 +85,13 @@ private:
     double time_diff_sum;
     unsigned int time_diff_count;
 
-    cv::Mat right_saved_image;
+    // cv::Mat right_saved_image;
+    sensor_msgs::ImagePtr right_saved_image;
     double right_saved_timestamp;
     sensor_msgs::CameraInfoPtr right_saved_info;
 
-    std::vector<cv::Mat> left_image_vector;
+    // std::vector<cv::Mat> left_image_vector;
+    std::vector<sensor_msgs::ImagePtr> left_image_vector;
     std::vector<sensor_msgs::CameraInfoPtr> left_info_vector;
     std::vector<double> left_stamp_vector;
 

@@ -54,22 +54,24 @@ NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
 // }
 
 void NaborisStereo::right_image_callback(const ImageConstPtr& right_image_msg, const sensor_msgs::CameraInfoConstPtr& right_info_msg) {
-    right_saved_image = extractMat(right_image_msg);
+    right_saved_image.reset(new sensor_msgs::Image(*right_image_msg));
+    // right_saved_image = extractMat(right_image_msg);
     right_saved_info.reset(new sensor_msgs::CameraInfo(*right_info_msg));
-    if (!right_saved_image.empty()) {
-        right_saved_timestamp = right_image_msg->header.stamp.toSec();
+    right_saved_timestamp = right_image_msg->header.stamp.toSec();
+    // if (!right_saved_image.empty()) {
         // ROS_INFO("Received right image: %f", right_saved_timestamp);
-    }
+    // }
 }
 
 void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, const sensor_msgs::CameraInfoConstPtr& left_info_msg)
 {
-    cv::Mat left_image = extractMat(left_image_msg);
-    if (left_image.empty()) {
-        return;
-    }
+    // cv::Mat left_image = extractMat(left_image_msg);
+    // if (left_image.empty()) {
+    //     return;
+    // }
 
-    left_image_vector.push_back(left_image);
+    sensor_msgs::ImagePtr left_saved_msg(new sensor_msgs::Image(*left_image_msg));
+    left_image_vector.push_back(left_saved_msg);
 
     sensor_msgs::CameraInfoPtr left_saved_info(new sensor_msgs::CameraInfo(*left_info_msg));
     left_info_vector.push_back(left_saved_info);
@@ -114,15 +116,25 @@ void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, con
         ERASE_UPTO_MIN_INDEX(left_stamp_vector);
     }
 
-    std_msgs::Header header;
-    header.stamp = ros::Time::now();
-    header.frame_id = "stereo";
-    left_info_vector.at(0)->header = header;
-    right_saved_info->header = header;
-    left_image_pub.publish(matToMsg(left_image_vector.at(0), header), left_info_vector.at(0));
-    right_image_pub.publish(matToMsg(right_saved_image, header), right_saved_info);
+    std_msgs::Header left_header;
+    left_header.stamp = ros::Time::now();
+    left_header.frame_id = "left_stereo";
+
+    std_msgs::Header right_header;
+    right_header.stamp = ros::Time::now();
+    right_header.frame_id = "right_stereo";
+
+    left_image_vector.at(0)->header = left_header;
+    left_info_vector.at(0)->header = left_header;
+    right_saved_image->header = right_header;
+    right_saved_info->header = right_header;
+
+    // left_image_pub.publish(matToMsg(left_image_vector.at(0), header), left_info_vector.at(0));
+    left_image_pub.publish(left_image_vector.at(0), left_info_vector.at(0));
+    right_image_pub.publish(right_saved_image, right_saved_info);
 }
 
+/*
 ImagePtr NaborisStereo::matToMsg(cv::Mat image, std_msgs::Header header) {
     return cv_bridge::CvImage(
         header, image_encodings::BGR8, image
@@ -143,7 +155,7 @@ cv::Mat NaborisStereo::extractMat(const ImageConstPtr& image_msg)
     return cv_ptr->image;
 }
 
-/*
+
 void NaborisStereo::right_image_callback(const ImageConstPtr& right_image_msg)
 {
     right_img_ready = true;
