@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, NaborisStereo::NODE_NAME);
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
     NaborisStereo broadcaster(&nh);
     ros::spin();
 

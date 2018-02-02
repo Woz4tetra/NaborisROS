@@ -7,11 +7,14 @@ const double NaborisStereo::MIN_ALLOWED_TIME_DIFF = 0.3;
 NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
     nh(*nodehandle),
     img_transport(nh)
-    // sync(MySyncPolicy(20), right_image_sub, left_image_sub)
 {
     ROS_INFO("Stereo node starting...");
 
-    // sync.registerCallback(boost::bind(&NaborisStereo::callback, this, _1, _2));
+    nh.param<string>("right_cam_sub_topic", right_cam_sub_topic, "/naboris_ip_cam/image_ra");
+    nh.param<string>("left_cam_sub_topic", left_cam_sub_topic, "/raspicam_node/imag");
+
+    // nh.param<string>("right_cam_pub_topic", right_cam_pub_topic, "/naboris_ip_cam/image_ra");
+    // nh.param<string>("left_cam_pub_topic", left_cam_pub_topic, "/raspicam_node/imag");
 
     right_image_sub = img_transport.subscribeCamera(
         "/naboris_ip_cam/image_raw",

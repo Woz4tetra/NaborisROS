@@ -37,17 +37,17 @@ class NaborisStereo {
 private:
     ros::NodeHandle nh;
 
-    // string right_cam_sub_topic;
-    // string left_cam_sub_topic;
-    //
-    // string right_cam_pub_topic;
-    // string left_cam_pub_topic;
-    //
-    // string right_info_sub_topic;
-    // string left_info_sub_topic;
-    //
-    // string right_info_pub_topic;
-    // string left_info_pub_topic;
+    string right_cam_sub_topic;
+    string left_cam_sub_topic;
+
+    string right_cam_pub_topic;
+    string left_cam_pub_topic;
+
+    string right_info_sub_topic;
+    string left_info_sub_topic;
+
+    string right_info_pub_topic;
+    string left_info_pub_topic;
 
 
     // typedef image_transport::CameraSubscriber ImageSubscriber;
