@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, NaborisOdometry::NODE_NAME);
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
 
     NaborisOdometry broadcaster(&nh);
     ros::spin();

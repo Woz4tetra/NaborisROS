@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, NaborisIpCam::NODE_NAME);
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
 
     NaborisIpCam broadcaster(&nh);
     ros::spin();

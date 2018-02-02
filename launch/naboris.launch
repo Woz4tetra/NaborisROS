@@ -1,20 +1,39 @@
 
 <launch>
-    <!-- <include file="$(find naboris_arduino_bridge)/launch/naboris_arduino_bridge.launch"></include>
-    <include file="$(find naboris_odometry)/launch/naboris_odometry.launch"></include>
-    <include file="$(find naboris_motor_control)/launch/naboris_motor_control.launch"></include> -->
+    <!-- Arduino controls and sensors -->
+    <param name="counts_per_revolution" type="double" value="12.0"/>
+    <param name="gear_ratio" type="double" value="150.58"/>
+    <param name="wheel_radius_mm" type="double" value="27.0"/>
+    <param name="max_rpm" type="double" value="200.0"/>
+    <param name="dist_between_wheels_mm" type="double" value="109.0"/>
+    <param name="dist_between_axles_mm" type="double" value="143.0"/>
 
-    <!-- <include file="$(find naboris_ip_cam)/launch/naboris_ip_cam_720x480_30fps.launch"></include> -->
-    <!-- <include file="$(find raspicam_node)/launch/camerav2_720x480_30fps.launch"></include> -->
-
-    <!-- <include file="$(find naboris_ip_cam)/launch/naboris_ip_cam_410x308_30fps.launch"></include> -->
-    <!-- <include file="$(find raspicam_node)/launch/camerav2_410x308_30fps.launch"></include> -->
-
-    <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true" output="screen">
-        <param name="camera_info_url" value="package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308.yaml"/>
-        <param name="fps" value="15.0"/>
+    <node type="naboris_arduino_bridge_node" name="naboris_arduino_bridge_node" pkg="naboris_arduino_bridge" required="true" output="screen">
+        <param name="~serial_port" type="string" value="/dev/serial/by-id/usb-Adafruit_Adafruit_Metro_328_ADAPHOMje-if00-port0"/>
+        <param name="~serial_baud" type="int" value="115200"/>
     </node>
 
+    <node pkg="naboris_odometry" type="naboris_odometry_node" name="naboris_odometry_node" required="true">
+    </node>
+
+    <node pkg="naboris_motor_control" type="naboris_motor_control_node" name="naboris_motor_control_node" required="true">
+        <param name="~joystick_strafe_axis_x" type="int" value="3"/>
+        <param name="~joystick_strafe_axis_y" type="int" value="4"/>
+        <param name="~joystick_rotate_axis" type="int" value="0"/>
+
+    </node>
+
+    <!-- USB Joystick -->
+    <param name="joy_node/dev" value="/dev/input/js0"/>
+    <node pkg="joy" type="joy_node" name="usb_joystick"/>
+
+    <!-- IP camera node -->
+    <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true" output="screen">
+        <param name="~camera_info_url" value="package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308.yaml"/>
+        <param name="~fps" value="15.0" type="double"/>
+    </node>
+
+    <!-- Raspi cam nodes -->
     <node type="raspicam_node" pkg="raspicam_node" name="raspicam_node" output="screen">
         <param name="camera_info_url" value="package://raspicam_node/camera_info/camerav2_410x308.yaml"/>
         <param name="~width" value="410"/>
@@ -24,23 +43,19 @@
         <param name="camera_frame_id" value="naboris_left_cam"/>
     </node>
 
-    <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /raspicam_node $(find raspicam_node)/params/raspicam_node_defaults.yaml"/>
+    <node name="dynamic_reconfigure_load_raspicam" pkg="dynamic_reconfigure" type="dynparam"
+        args="load /raspicam_node $(find raspicam_node)/params/raspicam_node_defaults.yaml"
+    />
 
-    <!-- <include file="$(find naboris_stereo)/launch/naboris_stereo.launch"></include> -->
+    <!-- Intermediate stereo node -->
     <node type="naboris_stereo_node" name="naboris_stereo_node" pkg="naboris_stereo" required="true" output="screen">
         <param name="~right_cam_sub_topic" value="/naboris_ip_cam/image_raw"/>
         <param name="~left_cam_sub_topic" value="/raspicam_node/image"/>
     </node>
 
-    <!-- <node pkg="ORB_SLAM2" type="Stereo" name="orbslam2" output="screen" required="true"
-        args="/home/naboris/Documents/ORB_SLAM2/Vocabulary/ORBvoc.bin /home/naboris/Documents/ORB_SLAM2/Examples/ROS/ORB_SLAM2/Naboris.yaml true">
-    </node> -->
-
-    <!-- <node pkg="image_transport" type="republish" name="republish" required="true"
-        args="compressed in:=/raspicam_node/image raw out:=/naboris_stereo/left/image_raw">
-    </node> -->
-
+    <!-- Stereo proc nodes -->
+    <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
+        args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params.yaml"/>
 
     <group ns="/naboris_stereo" >
         <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" output="screen">
@@ -48,4 +63,9 @@
             <param name="~queue_size" value="25" />
         </node>
     </group>
+
+    <!-- ORB_SLAM2 -->
+    <!-- <node pkg="ORB_SLAM2" type="Stereo" name="orbslam2" output="screen" required="true"
+        args="/home/naboris/Documents/ORB_SLAM2/Vocabulary/ORBvoc.bin /home/naboris/Documents/ORB_SLAM2/Examples/ROS/ORB_SLAM2/Naboris.yaml true">
+    </node> -->
 </launch>

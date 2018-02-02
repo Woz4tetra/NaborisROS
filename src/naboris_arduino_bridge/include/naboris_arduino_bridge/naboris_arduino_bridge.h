@@ -16,6 +16,11 @@ class NaborisArduinoBridge {
 private:
     ros::NodeHandle nh;
 
+    string imu_pub_topic;
+    string right_enc_pub_topic;
+    string left_enc_pub_topic;
+    string motor_sub_topic;
+
     ros::Publisher imu_pub;
     ros::Publisher left_encoder_pub;
     ros::Publisher right_encoder_pub;

@@ -27,28 +27,35 @@ long long string_to_int64(string s) {
     return integer;
 }
 
-NaborisArduinoBridge::NaborisArduinoBridge(ros::NodeHandle* nodehandle):nh(*nodehandle)
+NaborisArduinoBridge::NaborisArduinoBridge(ros::NodeHandle* nodehandle):
+    nh(*nodehandle)
 {
-    imu_pub = nh.advertise<sensor_msgs::Imu>("BNO055", 5);
-    right_encoder_pub = nh.advertise<std_msgs::Int64>("right_encoder", 5);
-    left_encoder_pub = nh.advertise<std_msgs::Int64>("left_encoder", 5);
+    ROS_INFO("Naboris Arduino bridge starting...");
 
-    motor_command_sub = nh.subscribe("motor_commands", 1, &NaborisArduinoBridge::motor_command_callback, this);
+    nh.param<string>("imu_pub_topic", imu_pub_topic, "/BNO055");
+    nh.param<string>("right_enc_pub_topic", right_enc_pub_topic, "/right_encoder");
+    nh.param<string>("left_enc_pub_topic", left_enc_pub_topic, "/left_encoder");
+    nh.param<string>("motor_sub_topic", motor_sub_topic, "/motor_commands");
+    nh.param<string>("serial_port", serial_port, "/dev/ttyUSB0");
+    nh.param<int>("serial_baud", serial_baud, 115200);
 
-    if (!nh.getParam(NODE_NAME + "/serial_port", serial_port))
-    {
-        ROS_INFO_STREAM("Serial Port Parameter not found, using default");
-        serial_port = "/dev/ttyUSB0";
-    }
-    if (!nh.getParam(NODE_NAME + "/serial_baud", serial_baud))
-    {
-        ROS_INFO_STREAM("Serial Baud parameter not found, using default");
-        serial_baud = 115200;
-    }
+    ROS_INFO("imu_pub_topic: %s", imu_pub_topic.c_str());
+    ROS_INFO("right_enc_pub_topic: %s", right_enc_pub_topic.c_str());
+    ROS_INFO("left_enc_pub_topic: %s", left_enc_pub_topic.c_str());
+    ROS_INFO("motor_sub_topic: %s", motor_sub_topic.c_str());
+    ROS_INFO("serial_port: %s", serial_port.c_str());
+
+    imu_pub = nh.advertise<sensor_msgs::Imu>(imu_pub_topic, 5);
+    right_encoder_pub = nh.advertise<std_msgs::Int64>(right_enc_pub_topic, 5);
+    left_encoder_pub = nh.advertise<std_msgs::Int64>(left_enc_pub_topic, 5);
+
+    motor_command_sub = nh.subscribe(motor_sub_topic, 1, &NaborisArduinoBridge::motor_command_callback, this);
 
     euler_roll = 0.0;
     euler_pitch = 0.0;
     euler_yaw = 0.0;
+
+    ROS_INFO("Naboris Arduino bridge init done");
 }
 
 
@@ -262,7 +269,7 @@ void NaborisArduinoBridge::motor_command_callback(const std_msgs::Int16MultiArra
             motor_commands.data[0], motor_commands.data[1], motor_commands.data[2], motor_commands.data[3]
         );
 
-        ROS_INFO("writing %s", buffer);
+        ROS_DEBUG("writing %s", buffer);
         serial_ref.write(buffer);
     }
     else {

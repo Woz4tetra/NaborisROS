@@ -8,54 +8,25 @@ const double NaborisOdometry::ENCODER_UPDATE_THRESHOLD = 50.0;
 
 NaborisOdometry::NaborisOdometry(ros::NodeHandle* nodehandle):nh(*nodehandle)
 {
+    nh.param<string>("imu_topic", imu_topic, "/BNO055");
+    nh.param<string>("odom_topic", odom_topic, "/odom");
+    nh.param<string>("encoder_delta_topic", encoder_delta_topic, "/encoder_delta");
+    nh.param<string>("right_encoder_topic", right_encoder_topic, "/right_encoder");
+    nh.param<string>("left_encoder_topic", left_encoder_topic, "/left_encoder");
 
-    if (!nh.getParam(NODE_NAME + "/imu_topic", imu_topic))
-    {
-        ROS_INFO_STREAM("IMU topic parameter not found, using default");
-        imu_topic = "BNO055";
-    }
+    nh.param<double>("/counts_per_revolution", counts_per_revolution, 12.0);
+    nh.param<double>("/gear_ratio", gear_ratio, 150.58);
+    nh.param<double>("/wheel_radius_mm", wheel_radius_mm, 27.0);
 
-    if (!nh.getParam(NODE_NAME + "/odom_topic", odom_topic))
-    {
-        ROS_INFO_STREAM("Odom topic parameter not found, using default");
-        odom_topic = "odom";
-    }
+    ROS_INFO("imu_topic: %s", imu_topic.c_str());
+    ROS_INFO("odom_topic: %s", odom_topic.c_str());
+    ROS_INFO("encoder_delta_topic: %s", encoder_delta_topic.c_str());
+    ROS_INFO("right_encoder_topic: %s", right_encoder_topic.c_str());
+    ROS_INFO("left_encoder_topic: %s", left_encoder_topic.c_str());
 
-    if (!nh.getParam(NODE_NAME + "/encoder_delta_topic", encoder_delta_topic))
-    {
-        ROS_INFO_STREAM("Encoder delta topic parameter not found, using default");
-        encoder_delta_topic = "encoder_delta";
-    }
-
-    if (!nh.getParam(NODE_NAME + "/right_encoder_topic", right_encoder_topic))
-    {
-        ROS_INFO_STREAM("Right encoder topic parameter not found, using default");
-        right_encoder_topic = "right_encoder";
-    }
-
-    if (!nh.getParam(NODE_NAME + "/left_encoder_topic", left_encoder_topic))
-    {
-        ROS_INFO_STREAM("Left encoder topic parameter not found, using default");
-        left_encoder_topic = "left_encoder";
-    }
-
-    if (!nh.getParam(ROBOT_INFO + "/counts_per_revolution", counts_per_revolution))
-    {
-        ROS_INFO_STREAM("Counts per revolution parameter not found, using default (12)");
-        counts_per_revolution = 12.0;
-    }
-
-    if (!nh.getParam(ROBOT_INFO + "/gear_ratio", gear_ratio))
-    {
-        ROS_INFO_STREAM("Gear ratio parameter not found, using default (150.58)");
-        gear_ratio = 150.58;
-    }
-
-    if (!nh.getParam(ROBOT_INFO + "/wheel_radius_mm", wheel_radius_mm))
-    {
-        ROS_INFO_STREAM("Wheel ratio parameter not found, using default (27.0 mm)");
-        wheel_radius_mm = 27.0;
-    }
+    ROS_INFO("counts_per_revolution: %f", counts_per_revolution);
+    ROS_INFO("gear_ratio: %f", gear_ratio);
+    ROS_INFO("wheel_radius_mm: %f", wheel_radius_mm);
 
     ticks_to_mm = wheel_radius_mm * 2.0 * M_PI / (gear_ratio * counts_per_revolution);
     ROS_INFO("ticks to mm: %f", ticks_to_mm);

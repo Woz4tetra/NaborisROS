@@ -43,18 +43,6 @@ private:
     string right_cam_pub_topic;
     string left_cam_pub_topic;
 
-    string right_info_sub_topic;
-    string left_info_sub_topic;
-
-    string right_info_pub_topic;
-    string left_info_pub_topic;
-
-
-    // typedef image_transport::CameraSubscriber ImageSubscriber;
-    // typedef image_transport::SubscriberFilter ImageSubscriber;
-    // typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> MySyncPolicy;
-    // message_filters::Synchronizer<MySyncPolicy> sync;
-
     image_transport::CameraSubscriber right_image_sub;
     image_transport::CameraSubscriber left_image_sub;
 
@@ -62,9 +50,6 @@ private:
     image_transport::CameraPublisher left_image_pub;
 
     image_transport::ImageTransport img_transport;
-
-    // void callback(const CompressedImageConstPtr& right_image_msg, const ImageConstPtr& left_image_msg);
-    // void callback(const ImageConstPtr& right_image_msg, const ImageConstPtr& left_image_msg);
 
     void right_image_callback(
         const sensor_msgs::ImageConstPtr& right_image_msg,
@@ -75,22 +60,16 @@ private:
         const sensor_msgs::CameraInfoConstPtr& left_info_msg
     );
 
-    // cv::Mat extractMat(const sensor_msgs::ImageConstPtr& image_msg);
-    // sensor_msgs::ImagePtr matToMsg(cv::Mat image, std_msgs::Header header);
-    // bool right_img_ready;
-    // bool left_img_ready;
-
+    bool left_cam_ready;
     bool right_cam_in_sync;
     bool right_cam_in_sync_prev;
     double time_diff_sum;
     unsigned int time_diff_count;
 
-    // cv::Mat right_saved_image;
     sensor_msgs::ImagePtr right_saved_image;
     double right_saved_timestamp;
     sensor_msgs::CameraInfoPtr right_saved_info;
 
-    // std::vector<cv::Mat> left_image_vector;
     std::vector<sensor_msgs::ImagePtr> left_image_vector;
     std::vector<sensor_msgs::CameraInfoPtr> left_info_vector;
     std::vector<double> left_stamp_vector;
