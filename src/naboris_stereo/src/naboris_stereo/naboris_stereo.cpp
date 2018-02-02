@@ -37,6 +37,11 @@ NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
     right_image_pub = img_transport.advertiseCamera("/naboris_stereo/right/image_raw", 1);
     left_image_pub = img_transport.advertiseCamera("/naboris_stereo/left/image_raw", 1);
 
+    right_cam_in_sync = false;
+    right_cam_in_sync_prev = false;
+    time_diff_sum = 0.0;
+    time_diff_count = 0;
+
     ROS_INFO("Stereo node init done");
 }
 
@@ -53,7 +58,7 @@ void NaborisStereo::right_image_callback(const ImageConstPtr& right_image_msg, c
     right_saved_info.reset(new sensor_msgs::CameraInfo(*right_info_msg));
     if (!right_saved_image.empty()) {
         right_saved_timestamp = right_image_msg->header.stamp.toSec();
-        ROS_INFO("Received right image: %f", right_saved_timestamp);
+        // ROS_INFO("Received right image: %f", right_saved_timestamp);
     }
 }
 
@@ -70,8 +75,7 @@ void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, con
     left_info_vector.push_back(left_saved_info);
 
     left_stamp_vector.push_back(left_image_msg->header.stamp.toSec());
-    ROS_INFO("Received left image: %f", left_stamp_vector.back());
-
+    // ROS_INFO("Received left image: %f", left_stamp_vector.back());
 
     double min_time_diff = std::numeric_limits<double>::infinity();
     size_t min_time_diff_index = 0;
@@ -84,11 +88,25 @@ void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, con
         }
     }
 
+    right_cam_in_sync_prev = right_cam_in_sync;
     if (min_time_diff > MIN_ALLOWED_TIME_DIFF) {
-        ROS_INFO("Right image out of sync!");
+        right_cam_in_sync = false;
+        if (right_cam_in_sync != right_cam_in_sync_prev) {
+            ROS_INFO("Right image out of sync! Will keep checking for images.");
+        }
         return;
     }
-    ROS_INFO("Min time diff: %f, %i", min_time_diff, min_time_diff_index);
+
+    right_cam_in_sync = true;
+    if (right_cam_in_sync != right_cam_in_sync_prev) {
+        ROS_INFO("Right image in sync.");
+    }
+
+    time_diff_sum += min_time_diff;
+    time_diff_count++;
+    if (time_diff_count % 100 == 0) {
+        ROS_INFO("Average stereo image time diff: %f. Num synced images: %d", time_diff_sum / (double)(time_diff_count), time_diff_count);
+    }
 
     if (min_time_diff_index > 0) {
         ERASE_UPTO_MIN_INDEX(left_image_vector);

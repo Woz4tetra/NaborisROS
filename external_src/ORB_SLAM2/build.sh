@@ -30,5 +30,9 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make
 
+cd ..
+
 echo "Converting vocabulary to binary"
 ./tools/bin_vocabulary
+
+./build_ros.sh

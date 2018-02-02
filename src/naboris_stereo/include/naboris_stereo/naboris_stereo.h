@@ -80,6 +80,11 @@ private:
     // bool right_img_ready;
     // bool left_img_ready;
 
+    bool right_cam_in_sync;
+    bool right_cam_in_sync_prev;
+    double time_diff_sum;
+    unsigned int time_diff_count;
+
     cv::Mat right_saved_image;
     double right_saved_timestamp;
     sensor_msgs::CameraInfoPtr right_saved_info;
@@ -87,6 +92,7 @@ private:
     std::vector<cv::Mat> left_image_vector;
     std::vector<sensor_msgs::CameraInfoPtr> left_info_vector;
     std::vector<double> left_stamp_vector;
+
 
 public:
     NaborisStereo(ros::NodeHandle* nodehandle);

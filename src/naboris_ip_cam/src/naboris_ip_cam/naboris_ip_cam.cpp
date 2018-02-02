@@ -68,7 +68,7 @@ void NaborisIpCam::timerCallback(const ros::TimerEvent &event)
     if (!capture.read(image))
     {
         ROS_WARN("IP camera found no frame");
-        cv::waitKey();
+        return;
     }
 
     cv_img.header.stamp = ros::Time::now();

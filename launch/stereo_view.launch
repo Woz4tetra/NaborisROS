@@ -1,0 +1,9 @@
+
+<launch>
+    <node pkg="image_view" type="stereo_view" name="stereo_view" output="screen" args="stereo:=naboris_stereo image:=image_rect">
+        <!-- <param name="stereo" value="naboris_stereo" />
+        <param name="image" value="image_rect" /> -->
+        <param name="~approximate_sync" value="True" />
+        <param name="~queue_size" value="25" />
+    </node>
+</launch>
