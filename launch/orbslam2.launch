@@ -1,0 +1,7 @@
+
+<launch>
+    <node pkg="ORB_SLAM2" type="Stereo" name="orbslam2" output="screen"
+        args="/home/naboris/Documents/ORB_SLAM2/Vocabulary/ORBvoc.bin /home/naboris/Documents/ORB_SLAM2/Examples/ROS/ORB_SLAM2/Naboris.yaml true">
+    </node>
+
+</launch>
