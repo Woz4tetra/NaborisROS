@@ -40,6 +40,30 @@ qtcreator-*
 /planning/docs
 /planning/src
 
+# ORB_SLAM2
+CMakeLists.txt.user
+external_src/ORB_SLAM2/Examples/Monocular/mono_euroc
+external_src/ORB_SLAM2/Examples/Monocular/mono_kitti
+external_src/ORB_SLAM2/Examples/Monocular/mono_tum
+external_src/ORB_SLAM2/Examples/RGB-D/rgbd_tum
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/CMakeLists.txt.user
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/Mono
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/MonoAR
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/RGBD
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/Stereo
+external_src/ORB_SLAM2/Examples/ROS/ORB_SLAM2/build/
+external_src/ORB_SLAM2/Examples/Stereo/stereo_euroc
+external_src/ORB_SLAM2/Examples/Stereo/stereo_kitti
+KeyFrameTrajectory.txt
+external_src/ORB_SLAM2/Thirdparty/DBoW2/build/
+external_src/ORB_SLAM2/Thirdparty/DBoW2/lib/
+external_src/ORB_SLAM2/Thirdparty/g2o/build/
+external_src/ORB_SLAM2/Thirdparty/g2o/config.h
+external_src/ORB_SLAM2/Thirdparty/g2o/lib/
+external_src/ORB_SLAM2/Vocabulary/ORBvoc.txt
+external_src/ORB_SLAM2/Vocabulary/ORBvoc.bin
+tools/bin_vocabulary
+
 *~
 
 # Emacs
