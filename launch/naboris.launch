@@ -28,7 +28,7 @@
     <node pkg="joy" type="joy_node" name="usb_joystick"/> -->
 
     <!-- IP camera node -->
-    <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true" output="screen">
+    <node type="naboris_ip_cam_node" name="naboris_ip_cam_node" pkg="naboris_ip_cam" required="true">
         <param name="~camera_info_url" value="package://naboris_ip_cam/camera_info/naboris_ip_cam_410x308.yaml"/>
         <!-- <param name="~camera_info_url" value="package://naboris_ip_cam/camera_info/naboris_ip_cam_720x480.yaml"/> -->
 
@@ -37,7 +37,7 @@
     </node>
 
     <!-- Raspi cam nodes -->
-    <node type="raspicam_node" pkg="raspicam_node" name="raspicam_node" output="screen">
+    <node type="raspicam_node" pkg="raspicam_node" name="raspicam_node">
         <param name="camera_info_url" value="package://raspicam_node/camera_info/camerav2_410x308.yaml"/>
         <!-- <param name="camera_info_url" value="package://raspicam_node/camera_info/camerav2_720x480.yaml"/> -->
         <param name="~camera_name" value="naboris_stereo/left"/>
@@ -51,13 +51,13 @@
     </node>
 
     <node name="dynamic_reconfigure_load_raspicam" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /raspicam_node $(find raspicam_node)/params/raspicam_node_defaults.yaml"
-    />
+        args="load /raspicam_node $(find raspicam_node)/params/raspicam_node_defaults.yaml"/>
 
     <!-- Intermediate stereo node -->
-    <node type="naboris_stereo_node" name="naboris_stereo_node" pkg="naboris_stereo" required="true" output="screen">
+    <node type="naboris_stereo_node" name="naboris_stereo_node" pkg="naboris_stereo" required="true">
         <param name="~right_cam_sub_topic" value="/naboris_ip_cam/image_raw"/>
         <param name="~left_cam_sub_topic" value="/raspicam_node/image"/>
+        <param name="~fps" value="2.0" type="double"/>
     </node>
 
     <!-- Stereo proc nodes -->
@@ -67,11 +67,23 @@
         args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-720x480.yaml"/>
 
     <group ns="/naboris_stereo" >
-        <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" output="screen">
+        <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc">
             <param name="~approximate_sync" value="True" />
             <param name="~queue_size" value="25" />
         </node>
     </group>
+
+    <!-- <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+        <remap from="/naboris_stereo/points2" to="/cloud_in" />
+    </node> -->
+
+    <!-- <group ns="/naboris_stereo" >
+        <include file="$(find stereo_image_proc)/launch/stereo_image_proc.launch">
+            <arg name="manager" value="naboris_stereo_manager" />
+            <arg name="right" value="naboris_stereo/right" />
+            <arg name="left" value="naboris_stereo/left" />
+        </include>
+    </group> -->
 
     <!-- ORB_SLAM2 -->
     <!-- <node pkg="ORB_SLAM2" type="Stereo" name="orbslam2" output="screen" required="true"

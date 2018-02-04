@@ -12,9 +12,11 @@ NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
 
     nh.param<string>("right_cam_sub_topic", right_cam_sub_topic, "/naboris_ip_cam/image_raw");
     nh.param<string>("left_cam_sub_topic", left_cam_sub_topic, "/raspicam_node/image");
+    nh.param<double>("fps", fps, 5.0);
 
     ROS_INFO("right_cam_sub_topic: %s", right_cam_sub_topic.c_str());
     ROS_INFO("left_cam_sub_topic: %s", left_cam_sub_topic.c_str());
+    ROS_INFO("output fps: %f", fps);
 
     nh.param<string>("right_cam_pub_topic", right_cam_pub_topic, "/naboris_stereo/right/image_raw");
     nh.param<string>("left_cam_pub_topic", left_cam_pub_topic, "/naboris_stereo/left/image_raw");
@@ -52,6 +54,9 @@ NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
     time_diff_sum = 0.0;
     time_diff_count = 0;
 
+    prev_pub_time = ros::Time::now();
+    pub_duration = ros::Duration(1 / fps);
+
     ROS_INFO("Stereo node init done");
 }
 
@@ -68,6 +73,12 @@ void NaborisStereo::right_image_callback(const ImageConstPtr& right_image_msg, c
 
 void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, const sensor_msgs::CameraInfoConstPtr& left_info_msg)
 {
+    ros::Time current_time = ros::Time::now();
+    if ((current_time - prev_pub_time) < pub_duration) {
+        return;
+    }
+    prev_pub_time = current_time;
+
     sensor_msgs::ImagePtr left_saved_msg(new sensor_msgs::Image(*left_image_msg));
     left_image_vector.push_back(left_saved_msg);
 

@@ -66,6 +66,10 @@ private:
     double time_diff_sum;
     unsigned int time_diff_count;
 
+    double fps;
+    ros::Duration pub_duration;
+    ros::Time prev_pub_time;
+
     sensor_msgs::ImagePtr right_saved_image;
     double right_saved_timestamp;
     sensor_msgs::CameraInfoPtr right_saved_info;
