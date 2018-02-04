@@ -113,18 +113,14 @@ void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, con
         ERASE_UPTO_MIN_INDEX(left_stamp_vector);
     }
 
-    std_msgs::Header left_header;
-    left_header.stamp = ros::Time::now();
-    left_header.frame_id = "left_stereo";
+    std_msgs::Header header;
+    header.stamp = ros::Time::now();
+    header.frame_id = "stereo";
 
-    std_msgs::Header right_header;
-    right_header.stamp = ros::Time::now();
-    right_header.frame_id = "right_stereo";
-
-    left_image_vector.at(0)->header = left_header;
-    left_info_vector.at(0)->header = left_header;
-    right_saved_image->header = right_header;
-    right_saved_info->header = right_header;
+    left_image_vector.at(0)->header = header;
+    left_info_vector.at(0)->header = header;
+    right_saved_image->header = header;
+    right_saved_info->header = header;
 
     left_image_pub.publish(left_image_vector.at(0), left_info_vector.at(0));
     right_image_pub.publish(right_saved_image, right_saved_info);

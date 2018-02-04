@@ -1,6 +1,6 @@
 image_width: 410
 image_height: 308
-camera_name: right_cam
+camera_name: naboris_stereo/right
 camera_matrix:
   rows: 3
   cols: 3
