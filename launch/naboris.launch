@@ -1,14 +1,14 @@
 
 <launch>
     <!-- Arduino controls and sensors -->
-    <param name="counts_per_revolution" type="double" value="12.0"/>
+    <!-- <param name="counts_per_revolution" type="double" value="12.0"/>
     <param name="gear_ratio" type="double" value="150.58"/>
     <param name="wheel_radius_mm" type="double" value="27.0"/>
     <param name="max_rpm" type="double" value="200.0"/>
     <param name="dist_between_wheels_mm" type="double" value="109.0"/>
     <param name="dist_between_axles_mm" type="double" value="143.0"/>
 
-    <!-- <node type="naboris_arduino_bridge_node" name="naboris_arduino_bridge_node" pkg="naboris_arduino_bridge" required="true" output="screen">
+    <node type="naboris_arduino_bridge_node" name="naboris_arduino_bridge_node" pkg="naboris_arduino_bridge" required="true" output="screen">
         <param name="~serial_port" type="string" value="/dev/serial/by-id/usb-Adafruit_Adafruit_Metro_328_ADAPHOMje-if00-port0"/>
         <param name="~serial_baud" type="int" value="115200"/>
     </node>
@@ -63,6 +63,7 @@
     <!-- Stereo proc nodes -->
     <!-- <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
         args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-410x308.yaml"/> -->
+
     <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
         args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-720x480.yaml"/>
 

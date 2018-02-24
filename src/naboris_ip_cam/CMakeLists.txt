@@ -111,7 +111,7 @@ catkin_package(
     INCLUDE_DIRS include
     LIBRARIES naboris_ip_cam
     CATKIN_DEPENDS camera_info_manager cv_bridge image_transport roscpp roslaunch sensor_msgs
-    DEPENDS system_lib
+    # DEPENDS system_lib
 )
 
 ###########

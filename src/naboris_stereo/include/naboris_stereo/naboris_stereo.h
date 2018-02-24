@@ -3,6 +3,9 @@
 #define _NABORIS_STEREO_H_
 
 #include <ros/ros.h>
+#include <tf/transform_datatypes.h>
+#include <tf/transform_broadcaster.h>
+
 #include <vector>
 #include <limits>
 
@@ -50,6 +53,8 @@ private:
     image_transport::CameraPublisher left_image_pub;
 
     image_transport::ImageTransport img_transport;
+
+    tf::Transform static_stereo_to_base_link;
 
     void right_image_callback(
         const sensor_msgs::ImageConstPtr& right_image_msg,

@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     roslaunch
     sensor_msgs
+    tf
 )
 find_package(OpenCV REQUIRED core highgui videoio)
 
@@ -108,8 +109,8 @@ find_package(OpenCV REQUIRED core highgui videoio)
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES naboris_stereo
-    CATKIN_DEPENDS cv_bridge image_transport roscpp roslaunch sensor_msgs
-    DEPENDS system_lib
+    CATKIN_DEPENDS cv_bridge image_transport roscpp roslaunch sensor_msgs tf
+    # DEPENDS system_lib
 )
 
 ###########

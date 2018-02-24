@@ -108,7 +108,7 @@ catkin_package(
      INCLUDE_DIRS include
      LIBRARIES naboris_motor_control
      CATKIN_DEPENDS geometry_msgs roscpp roslaunch sensor_msgs
-     DEPENDS system_lib
+     # DEPENDS system_lib
 )
 
 ###########

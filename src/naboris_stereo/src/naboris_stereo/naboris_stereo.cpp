@@ -57,6 +57,11 @@ NaborisStereo::NaborisStereo(ros::NodeHandle* nodehandle):
     prev_pub_time = ros::Time::now();
     pub_duration = ros::Duration(1 / fps);
 
+    tf::Quaternion q;
+    q.setRPY(0, 0, 0);
+    static_stereo_to_base_link.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
+    static_stereo_to_base_link.setRotation(q);
+
     ROS_INFO("Stereo node init done");
 }
 
@@ -73,6 +78,8 @@ void NaborisStereo::right_image_callback(const ImageConstPtr& right_image_msg, c
 
 void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, const sensor_msgs::CameraInfoConstPtr& left_info_msg)
 {
+    static tf::TransformBroadcaster br;
+
     ros::Time current_time = ros::Time::now();
     if ((current_time - prev_pub_time) < pub_duration) {
         return;
@@ -135,4 +142,6 @@ void NaborisStereo::left_image_callback(const ImageConstPtr& left_image_msg, con
 
     left_image_pub.publish(left_image_vector.at(0), left_info_vector.at(0));
     right_image_pub.publish(right_saved_image, right_saved_info);
+
+    br.sendTransform(tf::StampedTransform(static_stereo_to_base_link, ros::Time::now(), "/base_link", "stereo"));
 }
