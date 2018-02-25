@@ -1,7 +1,7 @@
 
 <launch>
     <!-- Arduino controls and sensors -->
-    <!-- <param name="counts_per_revolution" type="double" value="12.0"/>
+    <param name="counts_per_revolution" type="double" value="12.0"/>
     <param name="gear_ratio" type="double" value="150.58"/>
     <param name="wheel_radius_mm" type="double" value="27.0"/>
     <param name="max_rpm" type="double" value="200.0"/>
@@ -21,7 +21,7 @@
         <param name="~joystick_strafe_axis_y" type="int" value="4"/>
         <param name="~joystick_rotate_axis" type="int" value="0"/>
 
-    </node> -->
+    </node>
 
     <!-- USB Joystick -->
     <!-- <param name="joy_node/dev" value="/dev/input/js0"/>
@@ -61,11 +61,11 @@
     </node>
 
     <!-- Stereo proc nodes -->
-    <!-- <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-410x308.yaml"/> -->
-
     <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
-        args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-720x480.yaml"/>
+        args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-410x308.yaml"/>
+
+    <!-- <node name="dynamic_reconfigure_load_stereo_proc" pkg="dynamic_reconfigure" type="dynparam"
+        args="load /naboris_stereo/stereo_image_proc $(find naboris_stereo)/params/stereo_params-720x480.yaml"/> -->
 
     <group ns="/naboris_stereo" >
         <node pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc">
